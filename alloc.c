@@ -74,7 +74,7 @@ void *allocate(unsigned long size, unsigned a)
                          * the rounded up request 'size'.
                          */
 
-                        unsigned m = sizeof(union header) + size + 10*1024;
+                        unsigned m = sizeof(union header) + size + 1*1024;
                         ap->next = malloc(m);
                         ap = ap->next;
                         if (ap == NULL) {
@@ -101,8 +101,40 @@ void *allocate(unsigned long size, unsigned a)
         
 }
 
+/* deallocations:
+ * an arena is a deallocated by adding its blocks to the free-blocks list and 
+ * reinitializing it to point to the appropriate one-element list that holds 
+ * a zero-length block.`
+ *
+ * the idea here is to prepend __all__ the linked blocks found in the arena[i]
+ * to the freeblocks list.
+ *
+ * yes. free-ing an arena frees the _ENTIRE_ arena.
+ *
+ */
+void deallocate(unsigned a)
+{
+        /* link the last block of arena[i] to the head of freeblocks */
+        arena[a]->next = freeblocks;
+
+        /* make freeblocks now point to the first block of arena[i] */
+        freeblocks = first[a].next;
+
+        /* detach the arena block list now from the sentinel structure first[a] */
+        first[a].next = NULL;
+
+        /* reinitialize the arena like it was from the beginning,
+         * pointing to the sentinel block structure. */
+        arena[a] = &first[a];
+        return;
+}
 
 int main(void)
 {
+        char *test = allocate(128, 0);
+        test = allocate(128*1024, 0);
+        deallocate(0);
+        test = allocate(128, 0);
+        deallocate(0);
         return 0;
 }
