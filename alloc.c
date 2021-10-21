@@ -1,6 +1,4 @@
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "c.h"
 
 /* exported functions are:
  * void *allocate(unsigned long n, unsigned a);
@@ -129,12 +127,3 @@ void deallocate(unsigned a)
         return;
 }
 
-int main(void)
-{
-        char *test = allocate(128, 0);
-        test = allocate(128*1024, 0);
-        deallocate(0);
-        test = allocate(128, 0);
-        deallocate(0);
-        return 0;
-}

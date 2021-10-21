@@ -1,11 +1,13 @@
 
-OBJS=alloc.o
+OBJS=alloc.o string.o main.o
+
+CFLAGS=-Wall -Werror -I.
 
 lcc: $(OBJS)
-	gcc -ggdb -o $@ $^
+	gcc -ggdb $(CFLAGS) -o $@ $^
 
 %.o:%.c
-	gcc -ggdb -c -o $@ $<
+	gcc -ggdb $(CFLAGS) -c -o $@ $<
 
 .PHONY: clean
 clean:
